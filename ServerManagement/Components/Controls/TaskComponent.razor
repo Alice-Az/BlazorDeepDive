@@ -1,0 +1,34 @@
+﻿@if (Task != null)
+{
+    <li @key="Task.Id">
+        <div class="row mb-2">
+            <div class="col-1" style="width:30px">
+                <input type="checkbox" class="form-check-input" style="vertical-align:middle" checked="@Task.IsCompleted" @bind-value="@Task.IsCompleted" />
+            </div>
+            <div class="col">
+                @if (Task.IsCompleted)
+                {
+                    <input type="text" class="form-control border-0 text-decoration-line-through" style="vertical-align:middle" @bind-value="Task.Name" disabled />
+
+                }
+                else
+                {
+                    <input type="text" class="form-control border-0" style="vertical-align:middle" @bind-value="Task.Name" />
+                }
+
+            </div>
+            <div class="col">
+                @if (Task.IsCompleted)
+                {
+                    <p style="margin-bottom:0px; margin-left:10px; align-content:center">Completed @Task.Completed </p>
+                }
+            </div>
+        </div>
+    </li>
+}
+
+
+@code {
+    [Parameter]
+    public ToDoTask? Task { get; set; }
+}

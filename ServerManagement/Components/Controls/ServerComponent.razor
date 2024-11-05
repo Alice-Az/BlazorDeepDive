@@ -1,0 +1,144 @@
+﻿@using ServerManagement.StateStore
+@inject NavigationManager NavigationManager
+@inject TorontoOnlineServersStore TorontoOnlineServersStore
+@inject MontrealOnlineServersStore MontrealOnlineServersStore
+@inject OttawaOnlineServersStore OttawaOnlineServersStore
+@inject CalgaryOnlineServersStore CalgaryOnlineServersStore
+@inject HalifaxOnlineServersStore HalifaxOnlineServersStore
+
+@if(Server != null)
+{
+    <tr style="background-color: @GetBackgroundColor()">
+        <td>
+            @Server.Name
+        </td>
+        <td>
+            @Server.City
+        </td>
+        <td style="color:@(Server.IsOnline ? "green" : "red")">
+            @(Server.IsOnline ? "online" : "offline")
+        </td>
+        <td>
+            @if (Server.IsOnline)
+            {
+                Random random = new Random();
+                int randomNumber = random.Next(0, 500);
+                <text>&nbsp; @randomNumber</text>
+            }
+            else
+            {
+                <text>&nbsp; N/A</text>
+            }
+        </td>
+        <td>
+            @if (Server.IsOnline)
+            {
+                <button type="button" class="btn btn-outline-danger" @onclick="@(() => {SetServerStatus(false);})">Turn Off</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-outline-success" @onclick="@(() => {SetServerStatus(true);})">Turn On</button>
+            }
+            &nbsp;
+            <a href="/server/@Server.ServerId">Edit</a>
+        </td>
+        <td>
+            <EditForm Model="Server"
+                      FormName="@($"form-server-{Server.ServerId}")"
+                      OnValidSubmit="@(() => {DeleteServer(Server.ServerId);})">
+                <button type="submit" class="btn btn-primary">Delete</button>
+            </EditForm>
+        </td>
+    </tr>
+}
+
+
+
+@code {
+    [Parameter]
+    public Server? Server { get; set; }
+
+    [CascadingParameter(Name = "SelectedCity")]
+    public string? SelectedCity { get; set; }
+
+    private void DeleteServer(int serverId)
+    {
+        if (serverId > 0)
+        {
+            ServersRepository.DeleteServer(serverId);
+            NavigationManager.NavigateTo("/servers", true);
+        }
+    }
+
+    private string GetBackgroundColor()
+    {
+        if (SelectedCity != null)
+        {
+            switch (SelectedCity)
+            {
+                case "Toronto": return "powderblue";
+                case "Montreal": return "lightgray";
+                case "Ottawa": return "palegreen";
+                case "Calgary": return "pink";
+                case "Halifax": return "white";
+                default: return "white";
+            }
+        }
+        else
+        {
+            return "white";
+        }
+    }
+
+    private void SetServerStatus(bool status)
+    {
+        if(Server is not null)
+        {
+            if (Server.IsOnline != status)
+            {
+                int num = 0;
+                switch (Server.City)
+                {
+                    case "Toronto":
+                        num = TorontoOnlineServersStore.GetNumServersOnline();
+                        if (status)
+                            TorontoOnlineServersStore.SetNumServersOnline(num + 1);
+                        else if (num >= 1)
+                            TorontoOnlineServersStore.SetNumServersOnline(num - 1);
+                        break;
+                    case "Montreal":
+                        num = MontrealOnlineServersStore.GetNumServersOnline();
+                        if (status)
+                            MontrealOnlineServersStore.SetNumServersOnline(num + 1);
+                        else if (num >= 1)
+                            MontrealOnlineServersStore.SetNumServersOnline(num - 1);
+                        break;
+                    case "Ottawa":
+                        num = OttawaOnlineServersStore.GetNumServersOnline();
+                        if (status)
+                            OttawaOnlineServersStore.SetNumServersOnline(num + 1);
+                        else if (num >= 1)
+                            OttawaOnlineServersStore.SetNumServersOnline(num - 1);
+                        break;
+                    case "Calgary":
+                        num = CalgaryOnlineServersStore.GetNumServersOnline();
+                        if (status)
+                            CalgaryOnlineServersStore.SetNumServersOnline(num + 1);
+                        else if (num >= 1)
+                            CalgaryOnlineServersStore.SetNumServersOnline(num - 1);
+                        break;
+                    case "Halifax":
+                        num = HalifaxOnlineServersStore.GetNumServersOnline();
+                        if (status)
+                            HalifaxOnlineServersStore.SetNumServersOnline(num + 1);
+                        else if (num >= 1)
+                            HalifaxOnlineServersStore.SetNumServersOnline(num - 1);
+                        break;
+                }
+
+                Server.IsOnline = status;
+            }
+        }
+       
+    }
+}

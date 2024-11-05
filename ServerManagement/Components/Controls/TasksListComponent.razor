@@ -1,0 +1,14 @@
+﻿@if(Tasks != null)
+{
+    @foreach (ToDoTask task in Tasks)
+    {
+        <TaskComponent Task="task"></TaskComponent>
+    }
+}
+
+
+
+@code {
+    [Parameter]
+    public List<ToDoTask>? Tasks { get; set; }
+}

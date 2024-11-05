@@ -1,0 +1,34 @@
+﻿@page "/todo"
+@rendermode InteractiveServer
+
+<h3>ToDo</h3>
+<br />
+<button type="button" class="btn btn-primary" @onclick=AddTask>
+    Add task
+</button>
+<br />
+<br />
+
+@if (tasks != null && tasks.Count > 0)
+{
+    <ul class="list-unstyled">
+        <TasksListComponent Tasks="tasks"></TasksListComponent>
+    </ul>
+}
+
+
+@code {
+    private List<ToDoTask> tasks = TasksRepository.GetTasks();
+
+    private void AddTask()
+    {
+        TasksRepository.AddTask();
+        tasks = TasksRepository.GetTasks();
+    }
+
+    private void SetTaskComplete(ToDoTask task)
+    {
+        task.IsCompleted = !task.IsCompleted;
+        task.Completed = task.IsCompleted ? DateTime.Now : DateTime.MinValue;
+    }
+}
